@@ -1,22 +1,29 @@
-// import { Exclude, Expose } from 'class-transformer';
-// import { Transform } from 'class-transformer';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+  VersionColumn,
+} from 'typeorm';
 
-// @Exclude() // 이 속성은 응답에 포함되지 않음
-// export class Movie {
-//   @Expose() // 이 속성은 응답에 포함됨
-//   id: number;
-//   @Expose() // 이 속성은 응답에 포함됨
-//   title: string;
-//   genre: string;
-
-//   get description() {
-//     return `This is ${this.title} movie`;
-//   }
-// }
-
+@Entity()
 export class Movie {
+  @PrimaryGeneratedColumn()
   id: number;
+
+  @Column()
   title: string;
-  // @Transform((params) => params.obj.genre.toUpperCase())
+
+  @Column()
   genre: string;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+
+  @VersionColumn()
+  version: number;
 }
