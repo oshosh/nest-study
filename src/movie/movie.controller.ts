@@ -1,18 +1,18 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  ClassSerializerInterceptor,
+  Controller,
   Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
   Query,
   UseInterceptors,
-  ClassSerializerInterceptor,
 } from '@nestjs/common';
-import { MovieService } from './movie.service';
 import { CreateMovieDto } from './dto/create-movie.dto';
 import { UpdateMovieDto } from './dto/update-movie.dto';
+import { MovieService } from './movie.service';
 
 @Controller('movie')
 @UseInterceptors(ClassSerializerInterceptor) // class-transformer를 interceptor로 사용
@@ -32,6 +32,11 @@ export class MovieController {
   @Post()
   postMovie(@Body() body: CreateMovieDto) {
     return this.movieService.createMovie(body);
+  }
+
+  @Post('series')
+  postSeries(@Body() body: CreateMovieDto) {
+    return this.movieService.createSeries(body);
   }
 
   @Patch(':id')

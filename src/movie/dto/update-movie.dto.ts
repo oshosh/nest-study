@@ -1,39 +1,32 @@
-import {
-  IsNotEmpty,
-  IsOptional,
-  registerDecorator,
-  ValidationOptions,
-  ValidatorConstraint,
-  ValidatorConstraintInterface,
-} from 'class-validator';
+import { IsNotEmpty, IsOptional } from 'class-validator';
 
-enum MovieGenre {
-  Fantasy = 'fantasy',
-  Action = 'action',
-}
+// enum MovieGenre {
+//   Fantasy = 'fantasy',
+//   Action = 'action',
+// }
 
-@ValidatorConstraint({
-  async: true,
-})
-class PasswordValidator implements ValidatorConstraintInterface {
-  validate(value: string) {
-    return value.length > 4 && value.length < 8;
-  }
-  defaultMessage() {
-    return `Password must be longer than 4 characters and less than 8 characters. input password ($value)`;
-  }
-}
+// @ValidatorConstraint({
+//   async: true,
+// })
+// class PasswordValidator implements ValidatorConstraintInterface {
+//   validate(value: string) {
+//     return value.length > 4 && value.length < 8;
+//   }
+//   defaultMessage() {
+//     return `Password must be longer than 4 characters and less than 8 characters. input password ($value)`;
+//   }
+// }
 
-function IsPasswordValidator(validationOptions?: ValidationOptions) {
-  return function (object: Object, propertyName: string) {
-    registerDecorator({
-      target: object.constructor,
-      propertyName,
-      options: validationOptions,
-      validator: PasswordValidator,
-    });
-  };
-}
+// function IsPasswordValidator(validationOptions?: ValidationOptions) {
+//   return function (object: Object, propertyName: string) {
+//     registerDecorator({
+//       target: object.constructor,
+//       propertyName,
+//       options: validationOptions,
+//       validator: PasswordValidator,
+//     });
+//   };
+// }
 
 export class UpdateMovieDto {
   @IsNotEmpty()
@@ -72,6 +65,6 @@ export class UpdateMovieDto {
   // @IsUUID() // 값이 UUID 형식인지 검증
   // @IsLongitude() // 값이 경도 형식인지 검증
   // @IsLatitude() // 값이 위도 형식인지 검증
-  @IsPasswordValidator({ message: 'Password is not valid' })
-  test: string;
+  // @IsPasswordValidator({ message: 'Password is not valid' })
+  // test: string;
 }
