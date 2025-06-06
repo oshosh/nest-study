@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as Joi from 'joi';
-import { Content, Movie, Series } from './movie/entity/movie.entity';
+import { Movie } from './movie/entity/movie.entity';
 import { MovieModule } from './movie/movie.module';
 
 @Module({
@@ -28,7 +28,7 @@ import { MovieModule } from './movie/movie.module';
           username: configService.get<string>('DB_USERNAME'),
           password: configService.get<string>('DB_PASSWORD'),
           database: configService.get<string>('DB_DATABASE'),
-          entities: [Movie, Series, Content],
+          entities: [Movie],
           synchronize: true, // 개발 환경에서만 true
         };
       },
