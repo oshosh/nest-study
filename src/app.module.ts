@@ -4,6 +4,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import * as Joi from 'joi';
 import { DirectorModule } from './director/director.module';
 import { Director } from './director/entity/director.entity';
+import { Genre } from './genre/entities/genre.entity';
+import { GenreModule } from './genre/genre.module';
 import { MovieDetail } from './movie/entity/movie-detail.entity';
 import { Movie } from './movie/entity/movie.entity';
 import { MovieModule } from './movie/movie.module';
@@ -31,7 +33,7 @@ import { MovieModule } from './movie/movie.module';
           username: configService.get<string>('DB_USERNAME'),
           password: configService.get<string>('DB_PASSWORD'),
           database: configService.get<string>('DB_DATABASE'),
-          entities: [Movie, MovieDetail, Director],
+          entities: [Movie, MovieDetail, Director, Genre],
           synchronize: true, // 개발 환경에서만 true
         };
       },
@@ -39,6 +41,7 @@ import { MovieModule } from './movie/movie.module';
     }),
     MovieModule,
     DirectorModule,
+    GenreModule,
   ],
 })
 export class AppModule {}
