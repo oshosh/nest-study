@@ -1,5 +1,5 @@
 import { Director } from 'src/director/entity/director.entity';
-import { Genre } from 'src/genre/entities/genre.entity';
+import { Genre } from 'src/genre/entity/genre.entity';
 import {
   Column,
   Entity,

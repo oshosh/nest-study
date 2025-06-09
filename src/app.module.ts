@@ -4,7 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import * as Joi from 'joi';
 import { DirectorModule } from './director/director.module';
 import { Director } from './director/entity/director.entity';
-import { Genre } from './genre/entities/genre.entity';
+import { Genre } from './genre/entity/genre.entity';
 import { GenreModule } from './genre/genre.module';
 import { MovieDetail } from './movie/entity/movie-detail.entity';
 import { Movie } from './movie/entity/movie.entity';
