@@ -22,32 +22,56 @@ export class MovieService {
   ) {}
 
   async findAll(title?: string) {
-    if (!title) {
-      return [
-        await this.movieRepository.find({
-          relations: ['director', 'genres'],
-        }),
-        await this.movieRepository.count(),
-      ];
+    const qb = await this.movieRepository
+      .createQueryBuilder('movie')
+      .leftJoinAndSelect('movie.director', 'director')
+      .leftJoinAndSelect('movie.genres', 'genres');
+
+    if (title) {
+      qb.where('movie.title LIKE :title', { title: `%${title}%` });
     }
 
-    return this.movieRepository.findAndCount({
-      where: { title: Like(`%${title}%`) },
-      relations: ['director', 'genres'],
-    });
+    return qb.getManyAndCount();
+
+    // if (!title) {
+    //   return [
+    //     await this.movieRepository.find({
+    //       relations: ['director', 'genres'],
+    //     }),
+    //     await this.movieRepository.count(),
+    //   ];
+    // }
+
+    // return this.movieRepository.findAndCount({
+    //   where: { title: Like(`%${title}%`) },
+    //   relations: ['director', 'genres'],
+    // });
   }
 
   async findOne(id: number) {
-    const movie = await this.movieRepository.findOne({
-      where: { id },
-      relations: ['detail', 'director', 'genres'],
-    });
+    const qb = await this.movieRepository
+      .createQueryBuilder('movie')
+      .leftJoinAndSelect('movie.detail', 'detail')
+      .leftJoinAndSelect('movie.director', 'director')
+      .leftJoinAndSelect('movie.genres', 'genres')
+      .where('movie.id = :id', { id });
 
-    if (!movie) {
+    if (!qb.getOne()) {
       throw new NotFoundException('Movie not found');
     }
 
-    return movie;
+    return qb.getOne();
+
+    // const movie = await this.movieRepository.findOne({
+    //   where: { id },
+    //   relations: ['detail', 'director', 'genres'],
+    // });
+
+    // if (!movie) {
+    //   throw new NotFoundException('Movie not found');
+    // }
+
+    // return movie;
   }
 
   async create(createMovieDto: CreateMovieDto) {
