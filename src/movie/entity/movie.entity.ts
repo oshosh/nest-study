@@ -27,14 +27,14 @@ export class Movie extends BaseTable {
   @JoinTable()
   genres: Genre[];
 
-  @OneToOne(() => MovieDetail, (movieDetail) => movieDetail.id, {
+  @OneToOne(() => MovieDetail, (movieDetail) => movieDetail.movie, {
     cascade: true,
     nullable: false, // null이 될 수 없는 제약조건 및 무결성 추가 detail id 삭제 시 오류 발생
   })
   @JoinColumn()
   detail: MovieDetail;
 
-  @ManyToOne(() => Director, (director) => director.id, {
+  @ManyToOne(() => Director, (director) => director.movies, {
     cascade: true,
     nullable: false,
   })
