@@ -9,6 +9,9 @@ import { GenreModule } from './genre/genre.module';
 import { MovieDetail } from './movie/entity/movie-detail.entity';
 import { Movie } from './movie/entity/movie.entity';
 import { MovieModule } from './movie/movie.module';
+import { UserModule } from './user/user.module';
+import { AuthModule } from './auth/auth.module';
+import { User } from './user/entities/user.entity';
 
 @Module({
   imports: [
@@ -22,6 +25,7 @@ import { MovieModule } from './movie/movie.module';
         DB_USERNAME: Joi.string().required(),
         DB_PASSWORD: Joi.string().required(),
         DB_DATABASE: Joi.string().required(),
+        HASH_ROUNDS: Joi.number().required(),
       }),
     }),
     TypeOrmModule.forRootAsync({
@@ -33,7 +37,7 @@ import { MovieModule } from './movie/movie.module';
           username: configService.get<string>('DB_USERNAME'),
           password: configService.get<string>('DB_PASSWORD'),
           database: configService.get<string>('DB_DATABASE'),
-          entities: [Movie, MovieDetail, Director, Genre],
+          entities: [Movie, MovieDetail, Director, Genre, User],
           synchronize: true, // 개발 환경에서만 true
         };
       },
@@ -42,6 +46,8 @@ import { MovieModule } from './movie/movie.module';
     MovieModule,
     DirectorModule,
     GenreModule,
+    UserModule,
+    AuthModule,
   ],
 })
 export class AppModule {}
