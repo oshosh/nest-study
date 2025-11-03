@@ -12,6 +12,7 @@ import { MovieModule } from './movie/movie.module';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { User } from './user/entities/user.entity';
+import { envVariables } from './common/const/env.const';
 
 @Module({
   imports: [
@@ -26,17 +27,19 @@ import { User } from './user/entities/user.entity';
         DB_PASSWORD: Joi.string().required(),
         DB_DATABASE: Joi.string().required(),
         HASH_ROUNDS: Joi.number().required(),
+        ACCESS_TOKEN_SECRET: Joi.string().required(),
+        REFRESH_TOKEN_SECRET: Joi.string().required(),
       }),
     }),
     TypeOrmModule.forRootAsync({
       useFactory: (configService: ConfigService) => {
         return {
-          type: configService.get<'postgres'>('DB_TYPE'),
-          host: configService.get<string>('DB_HOST'),
-          port: configService.get<number>('DB_PORT'),
-          username: configService.get<string>('DB_USERNAME'),
-          password: configService.get<string>('DB_PASSWORD'),
-          database: configService.get<string>('DB_DATABASE'),
+          type: configService.get<'postgres'>(envVariables.dbType),
+          host: configService.get<string>(envVariables.dbHost),
+          port: configService.get<number>(envVariables.dbPort),
+          username: configService.get<string>(envVariables.dbUsername),
+          password: configService.get<string>(envVariables.dbPassword),
+          database: configService.get<string>(envVariables.dbDatabase),
           entities: [Movie, MovieDetail, Director, Genre, User],
           synchronize: true, // 개발 환경에서만 true
         };
