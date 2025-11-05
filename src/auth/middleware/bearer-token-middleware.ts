@@ -53,8 +53,11 @@ export class BearerTokenMiddleware implements NestMiddleware {
 
       req.user = payload;
       next();
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
+      // 이건 토큰 만료시만...
+      if ((e as Error).name === 'TokenExpiredError') {
+        throw new UnauthorizedException('토큰이 만료되었습니다.');
+      }
       // public 데코레이터가 있는 경우 bearer token 있다면 오류가 나오기 때문에 통과 시키고 guard에서 처리
       next();
       // if (e instanceof UnauthorizedException) {

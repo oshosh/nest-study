@@ -10,10 +10,7 @@ export class AuthGuard implements CanActivate {
 
   canActivate(context: ExecutionContext): boolean {
     // 만약에 public 데코레이터가 있으면 통과
-    const isPublic = this.reflector.getAllAndOverride<boolean>(Public, [
-      context.getHandler(),
-      context.getClass(),
-    ]);
+    const isPublic = this.reflector.get<boolean>(Public, context.getHandler());
 
     if (isPublic) {
       return true;

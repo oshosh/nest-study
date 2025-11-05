@@ -21,6 +21,7 @@ import { envVariables } from './common/const/env.const';
 import { BearerTokenMiddleware } from './auth/middleware/bearer-token-middleware';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './auth/guard/auth.guard';
+import { RBACGuard } from './auth/guard/rbac.guard';
 
 @Module({
   imports: [
@@ -61,9 +62,14 @@ import { AuthGuard } from './auth/guard/auth.guard';
     AuthModule,
   ],
   providers: [
+    // 순서가 중요하다... guard는 위에서 부터 순차적으로 실행된다.
     {
       provide: APP_GUARD,
       useClass: AuthGuard, // 전역 가드 설정
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RBACGuard, // 전역 가드 설정
     },
   ],
 })
