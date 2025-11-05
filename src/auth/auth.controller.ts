@@ -4,10 +4,11 @@ import { UseGuards } from '@nestjs/common';
 import { User } from 'src/user/entities/user.entity';
 import { LocalAuthGuard } from './strategy/local.strategy';
 import { JwtAuthGuard } from './strategy/jwt.strategy';
+import { Public } from './decorator/public.decorator';
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
-
+  @Public()
   @Post('register')
   // authorization: Basic $token
   registerUser(@Headers('authorization') token: string) {
@@ -15,6 +16,7 @@ export class AuthController {
   }
 
   // https://www.jwt.io/ 에서 토큰 생성 가능
+  @Public()
   @Post('login')
   // authorization: Basic $token
   loginUser(@Headers('authorization') token: string) {

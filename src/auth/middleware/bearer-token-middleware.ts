@@ -26,9 +26,9 @@ export class BearerTokenMiddleware implements NestMiddleware {
       return;
     }
 
-    const token = this.validateBearerToken(authHeader);
-
     try {
+      const token = this.validateBearerToken(authHeader);
+
       // jwt io에서도 확인했지만 refresh 토큰인지 access 토큰인지 확인하기 위해 decode를 사용
       const decodedPayload: { sub: number; role: Role; type: string } =
         await this.jwtService.decode(token);
@@ -53,11 +53,14 @@ export class BearerTokenMiddleware implements NestMiddleware {
 
       req.user = payload;
       next();
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
-      if (e instanceof UnauthorizedException) {
-        // 리프레시 토큰이 사라지거나 만료인 경우
-        throw new UnauthorizedException('토큰이 만료되었습니다.');
-      }
+      // public 데코레이터가 있는 경우 bearer token 있다면 오류가 나오기 때문에 통과 시키고 guard에서 처리
+      next();
+      // if (e instanceof UnauthorizedException) {
+      //   // 리프레시 토큰이 사라지거나 만료인 경우
+      //   throw new UnauthorizedException('토큰이 만료되었습니다.');
+      // }
     }
   }
 
