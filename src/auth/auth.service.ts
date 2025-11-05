@@ -56,9 +56,10 @@ export class AuthService {
       // payload + 검증 = verifyAsync
       const payload: { sub: number; role: Role; type: string } =
         await this.jwtService.verifyAsync(token, {
-          // access token 검증시 사용하는 시크릿 키로 디코딩
           secret: this.configService.get<string>(
-            envVariables.refreshTokenSecret,
+            isRefresh
+              ? envVariables.refreshTokenSecret
+              : envVariables.accessTokenSecret,
           ),
         });
 

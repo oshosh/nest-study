@@ -38,15 +38,9 @@ export class AuthController {
 
   // access token 갱신
   @Post('token/access')
-  async rotateAccessToken(@Headers('authorization') token: string) {
-    const payload = await this.authService.parseBearerToken(token, true);
-    if (payload) {
-      return {
-        accessToken: await this.authService.issueToken(
-          { id: payload?.sub, role: payload?.role },
-          false,
-        ),
-      };
-    }
+  async rotateAccessToken(@Request() req: Request & { user: User }) {
+    return {
+      accessToken: await this.authService.issueToken(req.user, false),
+    };
   }
 }

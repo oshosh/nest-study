@@ -1,4 +1,9 @@
-import { Module } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as Joi from 'joi';
@@ -13,6 +18,7 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { User } from './user/entities/user.entity';
 import { envVariables } from './common/const/env.const';
+import { BearerTokenMiddleware } from './auth/middleware/bearer-token-middleware';
 
 @Module({
   imports: [
@@ -53,4 +59,15 @@ import { envVariables } from './common/const/env.const';
     AuthModule,
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  // 모든 route에 대해 BearerTokenMiddleware를 적용 하지만 exclude 옵션을 사용하여 제외
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(BearerTokenMiddleware)
+      .exclude(
+        { path: 'auth/register', method: RequestMethod.POST },
+        { path: 'auth/login', method: RequestMethod.POST },
+      )
+      .forRoutes('*');
+  }
+}
