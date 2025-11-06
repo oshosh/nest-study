@@ -13,6 +13,14 @@ export class GenreService {
   ) {}
 
   async create(createGenreDto: CreateGenreDto) {
+    const genre = await this.genreRepository.findOne({
+      where: { name: createGenreDto.name },
+    });
+
+    if (genre) {
+      throw new NotFoundException('장르가 이미 존재합니다.');
+    }
+
     return await this.genreRepository.save(createGenreDto);
   }
 
