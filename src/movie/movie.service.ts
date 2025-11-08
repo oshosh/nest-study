@@ -1,14 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { CommonService } from 'src/common/common.service';
 import { Director } from 'src/director/entity/director.entity';
+import { Genre } from 'src/genre/entity/genre.entity';
 import { DataSource, In, Repository } from 'typeorm';
 import { CreateMovieDto } from './dto/create-movie.dto';
+import { GetMoviesDto } from './dto/get-movies.dto';
 import { UpdateMovieDto } from './dto/update-movie.dto';
 import { MovieDetail } from './entity/movie-detail.entity';
 import { Movie } from './entity/movie.entity';
-import { Genre } from 'src/genre/entity/genre.entity';
-import { GetMoviesDto } from './dto/get-movies.dto';
-import { CommonService } from 'src/common/common.service';
 
 @Injectable()
 export class MovieService {
@@ -26,8 +26,8 @@ export class MovieService {
   ) {}
 
   async findAll(getMoviesDto: GetMoviesDto) {
-    const { title, page, take } = getMoviesDto;
-    console.log(page, take);
+    // const { title, page, take } = getMoviesDto;
+    const { title, cursor, order, take } = getMoviesDto;
 
     const qb = this.movieRepository
       .createQueryBuilder('movie')
@@ -38,11 +38,24 @@ export class MovieService {
       qb.where('movie.title LIKE :title', { title: `%${title}%` });
     }
 
-    if (take && page) {
-      this.commonService.applyPagePaginationParamsToQb(qb, { page, take });
-    }
+    // if (take && page) {
+    //   this.commonService.applyPagePaginationParamsToQb(qb, { page, take });
+    // }
 
-    return await qb.getManyAndCount();
+    const { nextCursor } =
+      await this.commonService.applyCursorPaginationParamsToQb(qb, {
+        cursor,
+        order,
+        take,
+      });
+
+    const [data, count] = await qb.getManyAndCount();
+
+    return {
+      data,
+      nextCursor,
+      count,
+    };
   }
 
   async findOne(id: number) {

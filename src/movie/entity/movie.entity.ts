@@ -27,6 +27,11 @@ export class Movie extends BaseTable {
   @JoinTable()
   genres: Genre[];
 
+  @Column({
+    default: 0,
+  })
+  likeCount: number;
+
   @OneToOne(() => MovieDetail, (movieDetail) => movieDetail.movie, {
     cascade: true,
     nullable: false, // null이 될 수 없는 제약조건 및 무결성 추가 detail id 삭제 시 오류 발생
