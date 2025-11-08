@@ -9,15 +9,18 @@ import {
   Patch,
   Post,
   Query,
+  Req,
   UseInterceptors,
 } from '@nestjs/common';
-import { CreateMovieDto } from './dto/create-movie.dto';
-import { UpdateMovieDto } from './dto/update-movie.dto';
-import { MovieService } from './movie.service';
 import { Public } from 'src/auth/decorator/public.decorator';
 import { RBAC } from 'src/auth/decorator/rbac.decorator';
+import { TransactionInterceptor } from 'src/common/interceptor/transaction.interceptor';
 import { Role } from 'src/user/entities/user.entity';
+import { QueryRunner } from 'typeorm';
+import { CreateMovieDto } from './dto/create-movie.dto';
 import { GetMoviesDto } from './dto/get-movies.dto';
+import { UpdateMovieDto } from './dto/update-movie.dto';
+import { MovieService } from './movie.service';
 
 @Controller('movie')
 @UseInterceptors(ClassSerializerInterceptor) // class-transformer를 interceptor로 사용
@@ -27,8 +30,8 @@ export class MovieController {
   @Public()
   @Get()
   getMovies(@Query() getMoviesDto: GetMoviesDto) {
-    const { title, page, take } = getMoviesDto;
-    return this.movieService.findAll({ title, page, take });
+    const { title, cursor, order, take } = getMoviesDto;
+    return this.movieService.findAll({ title, cursor, order, take });
   }
 
   @Public()
@@ -50,8 +53,12 @@ export class MovieController {
 
   @Post()
   @RBAC(Role.admin)
-  postMovie(@Body() body: CreateMovieDto) {
-    return this.movieService.create(body);
+  @UseInterceptors(TransactionInterceptor)
+  postMovie(
+    @Body() body: CreateMovieDto,
+    @Req() req: Request & { queryRunner: QueryRunner },
+  ) {
+    return this.movieService.create(body, req.queryRunner);
   }
 
   @Patch(':id')

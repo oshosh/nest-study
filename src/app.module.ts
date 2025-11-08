@@ -5,8 +5,15 @@ import {
   RequestMethod,
 } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as Joi from 'joi';
+import { AuthModule } from './auth/auth.module';
+import { AuthGuard } from './auth/guard/auth.guard';
+import { RBACGuard } from './auth/guard/rbac.guard';
+import { BearerTokenMiddleware } from './auth/middleware/bearer-token-middleware';
+import { envVariables } from './common/const/env.const';
+import { ResponseTimeInterceptor } from './common/interceptor/response-time-interceptor';
 import { DirectorModule } from './director/director.module';
 import { Director } from './director/entity/director.entity';
 import { Genre } from './genre/entity/genre.entity';
@@ -14,14 +21,8 @@ import { GenreModule } from './genre/genre.module';
 import { MovieDetail } from './movie/entity/movie-detail.entity';
 import { Movie } from './movie/entity/movie.entity';
 import { MovieModule } from './movie/movie.module';
-import { UserModule } from './user/user.module';
-import { AuthModule } from './auth/auth.module';
 import { User } from './user/entities/user.entity';
-import { envVariables } from './common/const/env.const';
-import { BearerTokenMiddleware } from './auth/middleware/bearer-token-middleware';
-import { APP_GUARD } from '@nestjs/core';
-import { AuthGuard } from './auth/guard/auth.guard';
-import { RBACGuard } from './auth/guard/rbac.guard';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -70,6 +71,10 @@ import { RBACGuard } from './auth/guard/rbac.guard';
     {
       provide: APP_GUARD,
       useClass: RBACGuard, // 전역 가드 설정
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ResponseTimeInterceptor, // 전역 인터셉터 설정
     },
   ],
 })
