@@ -5,7 +5,7 @@ import {
   RequestMethod,
 } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as Joi from 'joi';
 import { AuthModule } from './auth/auth.module';
@@ -13,6 +13,8 @@ import { AuthGuard } from './auth/guard/auth.guard';
 import { RBACGuard } from './auth/guard/rbac.guard';
 import { BearerTokenMiddleware } from './auth/middleware/bearer-token-middleware';
 import { envVariables } from './common/const/env.const';
+import { ForbiddenExceptionFilter } from './common/filter/forbidden.filter';
+import { QueryFailedExceptionFilter } from './common/filter/query-failed.filter';
 import { ResponseTimeInterceptor } from './common/interceptor/response-time-interceptor';
 import { DirectorModule } from './director/director.module';
 import { Director } from './director/entity/director.entity';
@@ -70,11 +72,19 @@ import { UserModule } from './user/user.module';
     },
     {
       provide: APP_GUARD,
-      useClass: RBACGuard, // 전역 가드 설정
+      useClass: RBACGuard, // RBAC 전역 가드 설정
     },
     {
       provide: APP_INTERCEPTOR,
       useClass: ResponseTimeInterceptor, // 전역 인터셉터 설정
+    },
+    {
+      provide: APP_FILTER,
+      useClass: ForbiddenExceptionFilter, // ForbiddenException 전역 필터 설정
+    },
+    {
+      provide: APP_FILTER,
+      useClass: QueryFailedExceptionFilter, // QueryFailedError 전역 필터 설정
     },
   ],
 })
