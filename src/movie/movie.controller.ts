@@ -10,8 +10,10 @@ import {
   Post,
   Query,
   Req,
+  UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { Public } from 'src/auth/decorator/public.decorator';
 import { RBAC } from 'src/auth/decorator/rbac.decorator';
 import { TransactionInterceptor } from 'src/common/interceptor/transaction.interceptor';
@@ -54,10 +56,13 @@ export class MovieController {
   @Post()
   @RBAC(Role.admin)
   @UseInterceptors(TransactionInterceptor)
+  @UseInterceptors(FileInterceptor('movie'))
   postMovie(
     @Body() body: CreateMovieDto,
     @Req() req: Request & { queryRunner: QueryRunner },
+    @UploadedFile() file: Express.Multer.File,
   ) {
+    console.log(file);
     return this.movieService.create(body, req.queryRunner);
   }
 

@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import {
   ArrayNotEmpty,
   IsArray,
@@ -14,6 +15,7 @@ export class CreateMovieDto {
   @IsArray()
   @ArrayNotEmpty()
   @IsNumber({}, { each: true }) // 배열 안의 요소가 모두 숫자인지 확인
+  @Type(() => Number)
   genreIds: number[];
 
   @IsNotEmpty()

@@ -141,9 +141,9 @@ export class MovieService {
       .of(movieId)
       .add(genres.map((genre) => genre.id));
 
-    await qr.commitTransaction();
+    // await qr.commitTransaction();
 
-    return await this.movieRepository.findOne({
+    return await qr.manager.findOne(Movie, {
       where: { id: movieId },
       relations: ['detail', 'director', 'genres'],
     });
