@@ -10,7 +10,6 @@ import { MovieDetail } from './entity/movie-detail.entity';
 import { Movie } from './entity/movie.entity';
 import { MovieController } from './movie.controller';
 import { MovieService } from './movie.service';
-
 @Module({
   imports: [
     TypeOrmModule.forFeature([Movie, MovieDetail, Director, Genre]),
@@ -19,6 +18,15 @@ import { MovieService } from './movie.service';
       storage: diskStorage({
         // 지금 루트 디렉토리
         destination: join(process.cwd(), 'public', 'movie'),
+        // filename: (req, file, callback) => {
+        //   const split = file.originalname.split('.');
+        //   let extension = 'mp4';
+        //   if (split.length > 1) {
+        //     extension = split[split.length - 1];
+        //   }
+
+        //   callback(null, `${v4()}_${Date.now()}.${extension}`);
+        // },
       }),
     }),
   ],

@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   ClassSerializerInterceptor,
   Controller,
@@ -13,7 +14,7 @@ import {
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
-import { FilesInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { Public } from 'src/auth/decorator/public.decorator';
 import { RBAC } from 'src/auth/decorator/rbac.decorator';
 import { TransactionInterceptor } from 'src/common/interceptor/transaction.interceptor';
@@ -23,6 +24,7 @@ import { CreateMovieDto } from './dto/create-movie.dto';
 import { GetMoviesDto } from './dto/get-movies.dto';
 import { UpdateMovieDto } from './dto/update-movie.dto';
 import { MovieService } from './movie.service';
+import { MovieFilePipe } from './pipe/movie-file.pipe';
 
 @Controller('movie')
 @UseInterceptors(ClassSerializerInterceptor) // class-transformer를 interceptor로 사용
@@ -56,14 +58,35 @@ export class MovieController {
   @Post()
   @RBAC(Role.admin)
   @UseInterceptors(TransactionInterceptor)
-  @UseInterceptors(FilesInterceptor('movies'))
+  @UseInterceptors(
+    FileInterceptor('movie', {
+      limits: {
+        fileSize: 1024 * 1024 * 20, // 20MB
+      },
+      fileFilter: (req, file, callback) => {
+        if (file.mimetype !== 'video/mp4') {
+          return callback(
+            new BadRequestException('MP4 파일만 업로드 가능합니다.'),
+            false,
+          );
+        }
+        return callback(null, true);
+      },
+    }),
+  )
   postMovie(
     @Body() body: CreateMovieDto,
     @Req() req: Request & { queryRunner: QueryRunner },
-    @UploadedFiles() files: Express.Multer.File[],
+    @UploadedFiles(
+      new MovieFilePipe({
+        maxSize: 20,
+        mimeType: 'video/mp4',
+      }),
+    )
+    movie: Express.Multer.File,
   ) {
     console.log('--------------------------------');
-    console.log(files);
+    console.log(movie);
     console.log('--------------------------------');
 
     return this.movieService.create(body, req.queryRunner);
